@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Redirecting...</title>
+    <meta charset="UTF-8" />
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      fetch('directory.json')
+        .then(res => res.json())
+        .then(data => {
+          const destination = data[id];
+          if (destination) {
+            window.location.href = destination;
+          } else {
+            document.body.innerHTML = `<h2>ID "${id}" not found.</h2>`;
+          }
+        })
+        .catch(() => {
+          document.body.innerHTML = `<h2>Something went wrong loading redirect data.</h2>`;
+        });
+    </script>
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>
