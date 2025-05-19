@@ -1,28 +1,54 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Redirecting...</title>
-    <meta charset="UTF-8" />
-      <script>
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
-      
-        fetch('directory.json')
-          .then(res => res.json())
-          .then(data => {
-            const destination = data[id];
-            if (destination && destination.trim() !== "") {
-              window.location.href = destination;
-            } else {
-              window.location.href = 'https://facebook.com/slu.rebus';
-            }
-          })
-          .catch(() => {
-            window.location.href = 'https://facebook.com/slu.rebus';
-          });
-      </script>
-  </head>
-  <body>
-    Redirecting...
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>REBUS ID Redirect</title>
+</head>
+<body>
+  <script>
+    const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRFs2YJ700zHrnjkfu9QbDhHD61E64lQ-0KPWl_UDrm_0kN-lMP0E67XSdSTpYZnu1z20XyneoQIvJm/pub?output=csv';
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      const headers = lines[0].split(',');
+      const data = {};
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        const id = cols[0].trim();
+        const url = cols[1] ? cols[1].trim() : '';
+        if (id) data[id] = url;
+      }
+      return data;
+    }
+
+    function redirectTo(url) {
+      window.location.href = url;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    if (!id) {
+      redirectTo('https://facebook.com/slu.rebus');
+    } else {
+      fetch(sheetCsvUrl)
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch CSV');
+          return res.text();
+        })
+        .then(text => {
+          const directory = parseCSV(text);
+          const destination = directory[id];
+          if (destination && destination !== '') {
+            redirectTo(destination);
+          } else {
+            redirectTo('https://facebook.com/slu.rebus');
+          }
+        })
+        .catch(() => {
+          redirectTo('https://facebook.com/slu.rebus');
+        });
+    }
+  </script>
+</body>
 </html>
