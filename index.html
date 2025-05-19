@@ -21,6 +21,13 @@
       return data;
     }
 
+    function normalizeUrl(url) {
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return 'https://' + url;
+      }
+      return url;
+    }
+
     function redirectTo(url) {
       window.location.href = url;
     }
@@ -40,7 +47,7 @@
           const directory = parseCSV(text);
           const destination = directory[id];
           if (destination && destination !== '') {
-            redirectTo(destination);
+            redirectTo(normalizeUrl(destination));
           } else {
             redirectTo('https://facebook.com/slu.rebus');
           }
